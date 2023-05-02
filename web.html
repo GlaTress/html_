@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="Minuto_de_Dios_logo.png" type="image/png">
+	<title>Nuestra historia en el 2023</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d0950;
+            color: #ffffff;
+            font-family: sans-serif;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            height: -100vh;
+            padding: 50px;
+        }
+
+        #model-container {
+            width: 50%;
+            height: 80%;
+        }
+
+        #three-container {
+            position: relative;
+            width: 50%;
+            height: 400px;
+            margin-top: 50px;
+        }
+
+        #text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        #text-container h1 {
+            margin: 0;
+            font-size: 36px;
+            text-align: center;
+            
+            height: 500px;
+        }
+
+        #text-container p {
+            margin: 0;
+            text-align: justify;
+            
+            height: 50px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="three-container">
+            <div id="model-container"></div>
+            <div id="text-container">
+                <h1>Nuestra historia en el 2023</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aliquam sem fringilla ut morbi tincidunt. Fermentum et sollicitudin ac orci phasellus. Viverra maecenas accumsan lacus vel. Facilisis gravida neque convallis a cras semper. Orci phasellus egestas tellus rutrum tellus. Adipiscing elit duis tristique sollicitudin nibh sit amet commodo. Risus sed vulputate odio ut enim blandit volutpat maecenas volutpat. Arcu non odio euismod lacinia at quis risus. At in tellus integer feugiat scelerisque varius morbi enim.</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+
+        
+		var renderer = new THREE.WebGLRenderer();
+		renderer.setSize(window.innerWidth/2, window.innerHeight/2);
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.left = '50%';
+        renderer.domElement.style.bottom = '0';
+        renderer.domElement.style.transform = 'translate(-50%, 0)';
+		document.getElementById("model-container").appendChild(renderer.domElement);
+
+		// Crea la escena
+		var scene = new THREE.Scene();
+
+		// Crea la cámara
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+		camera.position.z = 5;
+        
+        var loader  = new THREE.GLTFLoader();
+        loader.load('http://127.0.0.1/PROM.glb', function(gltf) 
+        {
+            scene.add(gltf.scene);
+        });
+
+		// Crea la iluminación
+		var light = new THREE.PointLight(0xD6B1FD, 0.2, 100);
+		light.position.set(0, 0, 10);
+		scene.add(light);
+        scene.background = new THREE.Color(0x1A0B6D);
+
+		// Añade event listener para el movimiento del mouse
+		var mouse = new THREE.Vector2();
+		var targetRotation = new THREE.Vector2();
+        var isMouseDown = false;
+        var canMove = false;
+
+        function onDocumentMouseDown(event) {
+            if (event.cancelable) 
+            {
+                event.preventDefault();
+            }
+                        
+            if(isTactil())
+            {
+                var touch = event.touches[0] || event.changedTouches[0];
+                isInsideRenderer = checkIfInsideRenderer(touch.clientX, touch.clientY);
+            }
+            else
+            {
+                isInsideRenderer = checkIfInsideRenderer(event.clientX, event.clientY);
+            }
+            if (isInsideRenderer) 
+            {
+			    isMouseDown = true;
+            }
+            
+        }
+        
+        function onDocumentMouseUp(event) {
+            if (event.cancelable) 
+            {
+                event.preventDefault();
+            }
+			isMouseDown = false;
+            canMove = false;
+            document.body.style.overflow = 'auto';
+            document.removeEventListener('touchmove', function(event) {
+              event.preventDefault();
+            }, { passive: false });
+        }
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
+        document.addEventListener('mouseup', onDocumentMouseUp, false);
+
+        document.addEventListener('touchstart', onDocumentMouseDown, false);
+        document.addEventListener('touchmove', onDocumentMouseMove, false);
+        document.addEventListener('touchend', onDocumentMouseUp, false);
+
+        
+        animate();
+        returnToZero();
+		// Animación del objeto
+
+        function checkIfInsideRenderer(x, y) 
+        {
+          var rendererRect = renderer.domElement.getBoundingClientRect();
+          return (x >= rendererRect.left && x <= rendererRect.right && y >= rendererRect.top && y <= rendererRect.bottom);
+        }
+
+		function onDocumentMouseMove(event) {
+            if (event.cancelable) 
+            {
+                event.preventDefault();
+            }
+            if(!isMouseDown) return;
+            
+            if(isTactil())
+            {
+                var touch = event.touches[0] || event.changedTouches[0];
+                isInsideRenderer = checkIfInsideRenderer(touch.clientX, touch.clientY);
+                mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2 - 1;
+                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2 + 1;
+            }
+            else
+            {
+                
+                isInsideRenderer = checkIfInsideRenderer(event.clientX, event.clientY);
+			    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+            }
+                
+            document.body.style.overflow = 'hidden';
+			targetRotation.x = mouse.x * 1.6;
+			targetRotation.y = mouse.y * -1.4;
+
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+            // Buscamos el modelo 3D cargado previamente
+            var object3D = new THREE.Object3D();
+            // Buscar el modelo en la escena
+            var model = scene.children.find(child => child.type === 'Group');
+
+            // Asignar el modelo a la variable object3D si se encuentra, o usar el valor predeterminado si no se encuentra
+            if (model) {
+              object3D = model;
+            } else {
+              object3D = new THREE.Object3D();
+            }
+    
+            // Verificar si la rotación de object3D es cero
+            if (object3D.rotation.x === 0 && object3D.rotation.y === 0 && object3D.rotation.z === 0) {
+              return;
+            }
+			object3D.rotation.x += 0.05 * (targetRotation.y - object3D.rotation.x);
+			object3D.rotation.y += 0.05 *   (targetRotation.x - object3D.rotation.y);
+            renderer.render(scene, camera);
+        }
+
+		function returnToZero() {
+            
+			requestAnimationFrame(returnToZero);
+            var object3D = new THREE.Object3D();
+            var model = scene.children.find(child => child.type === 'Group');
+                    
+            // Asignar el modelo a la variable object3D si se encuentra, o usar el valor predeterminado si no se encuentra
+            if (model) {
+              object3D = model;
+            } else {
+              object3D = new THREE.Object3D();
+            }
+    
+            // Verificar si la rotación de object3D es cero
+            if (object3D.rotation.x === 0 && object3D.rotation.y === 0 && object3D.rotation.z === 0) {
+              return;
+            }
+            if(isMouseDown) return;
+            targetRotation.x = THREE.MathUtils.lerp(targetRotation.x, 0, 0.1)
+            targetRotation.y = THREE.MathUtils.lerp(targetRotation.y, 0, 0.1)
+            object3D.rotation.x =  THREE.MathUtils.lerp(object3D.rotation.x, 0,  0.1)
+            object3D.rotation.y =  THREE.MathUtils.lerp(object3D.rotation.y, 0,  0.1)
+        }
+        function isTactil(evento) 
+        {
+          return 'ontouchstart' in window || navigator.maxTouchPoints;
+        }
+</script>
+</body>
+</html>
