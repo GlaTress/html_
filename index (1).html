@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>euismod quis viverra nibh cras</title>
+    <style>/* Estilos generales */
+    /* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #5CA94C;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h2 {
+    color: #215C1C;
+}
+
+/* Selector de Materiales */
+#material-selector {
+    margin-bottom: 20px;
+}
+
+#category-select, #material-select, #search-button {
+    margin-right: 10px;
+}
+
+/* Barra de Búsqueda y Sugerencias */
+#search-container {
+    margin-bottom: 20px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #215C1C;
+    border-radius: 5px;
+}
+
+#suggestions {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #3BB031;
+    border-top: none;
+    position: absolute;
+    width: 42.6%;
+    background-color: white;
+}
+
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Resultados y Pasos para Reutilizar */
+#result-container {
+    background-color: #547D4B;
+    border: 1px solid #215C1C;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+/* Footer */
+footer {
+    background-color: #7ACB69;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Botón de Búsqueda */
+#search-button {
+    background-color: #3BB031;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#search-button:hover {
+    background-color: #215C1C;
+}
+
+/* Estilos para los resultados de búsqueda y pasos */
+#search-results, #reuse-steps {
+    background-color: white;
+    border: 1px solid #3BB031;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>euismod quis viverra nibh cras</h1>
+    </header>
+    <main>
+        <div id="material-selector">
+            <h2>Selector de Materiales</h2>
+            <select id="category-select">
+                <option value="plasticos">Plásticos</option>
+                <option value="electronicos">Electrónicos</option>
+            </select>
+            <select id="material-select">
+                <!-- Los materiales se cargarán dinámicamente aquí -->
+            </select>
+            <button id="search-button">Buscar</button>
+        </div>
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="Buscar materiales para reutilizar">
+            <div id="suggestions">
+                <!-- Sugerencias de búsqueda se mostrarán aquí -->
+            </div>
+        </div>
+        <div id="result-container" style="display: none;">
+            <div id="search-results">
+                <!-- Los resultados de la búsqueda se mostrarán aquí -->
+            </div>
+            <div id="reuse-steps">
+                <!-- Pasos para reutilizar materiales se mostrarán aquí -->
+            </div>
+        </div>
+    </main>
+    <footer>
+        <!-- Información de contacto o enlaces útiles -->
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const categorySelect = document.getElementById('category-select');
+            const materialSelect = document.getElementById('material-select');
+            const searchButton = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+            const suggestions = document.getElementById('suggestions');
+            const resultContainer = document.getElementById('result-container');
+            const searchResults = document.getElementById('search-results');
+            const reuseSteps = document.getElementById('reuse-steps');
+
+            const materials = {
+                "plasticos": [
+                    { name: "Botellas de plástico", steps: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mi ipsum faucibus vitae aliquet nec ullamcorper sit amet." },
+                    { name: "Bolsas de plástico", steps: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mi ipsum faucibus vitae aliquet nec ullamcorper sit amet." }
+                ],
+                "electronicos": [
+                    { name: "Celular", steps: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mi ipsum faucibus vitae aliquet nec ullamcorper sit amet." },
+                    { name: "Computadora", steps: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mi ipsum faucibus vitae aliquet nec ullamcorper sit amet." }
+                ]
+            };
+
+ categorySelect.addEventListener('change', function () {
+                const selectedCategory = categorySelect.value;
+                populateMaterialSelect(selectedCategory);
+            });
+
+           
+            populateMaterialSelect(categorySelect.value);
+
+            searchButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                const selectedMaterial = materialSelect.value;
+                displayMaterialInfo(selectedMaterial);
+            });
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = searchInput.value.toLowerCase();
+                const suggestionsList = [];
+                if (searchTerm.trim() === '') {
+                    suggestions.innerHTML = "";
+                } else {
+                    for (const category in materials) {
+                        const materialList = materials[category];
+                        materialList.forEach(item => {
+                            if (item.name.toLowerCase().includes(searchTerm)) {
+                                suggestionsList.push(item.name);
+                            }
+                        });
+                    }
+                    displaySuggestions(suggestionsList);
+                }
+            });
+
+            function populateMaterialSelect(category) {
+                const materialList = materials[category] || [];
+                materialSelect.innerHTML = "";
+                materialList.forEach(material => {
+                    const option = document.createElement('option');
+                    option.value = material.name;
+                    option.textContent = material.name;
+                    materialSelect.appendChild(option);
+                });
+            }
+
+            function displaySuggestions(suggestionsList) {
+                suggestions.innerHTML = "";
+                suggestionsList.forEach(suggestion => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.classList.add('suggestion');
+                    suggestionItem.textContent = suggestion;
+                    suggestionItem.addEventListener('click', function () {
+                        
+                        suggestions.innerHTML = "";
+                        displayMaterialInfo(suggestion);
+                    });
+                    suggestions.appendChild(suggestionItem);
+                });
+            }
+
+            function displayMaterialInfo(materialName) {
+                const material = findMaterialByName(materialName);
+                if (material) {
+                    searchResults.innerHTML = `<h1>${material.name}</h1>`;
+                    reuseSteps.innerHTML = `<h2>Pasos para reciclar</h2>${material.steps}`;
+                    resultContainer.style.display = 'block';
+                } else {
+                    resultContainer.style.display = 'none';
+                }
+            }
+
+            function findMaterialByName(materialName) {
+                for (const category in materials) {
+                    const materialList = materials[category];
+                    const foundMaterial = materialList.find(item => item.name.toLowerCase() === materialName.toLowerCase());
+                    if (foundMaterial) {
+                        return foundMaterial;
+                    }
+                }
+                return null;
+            }
+        });
+    </script>
+</body>
+</html>
